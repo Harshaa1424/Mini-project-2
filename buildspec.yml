@@ -11,7 +11,7 @@ phases:
     commands:
       - echo "Hello from build phase"
       # Uncomment below if you want to build Docker image later
-      # - docker build -t myapp:latest .
+      - docker build -t myapp:latest .
 
 artifacts:
   files:

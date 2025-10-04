@@ -1,0 +1,25 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_DEFAULT_REGION: "us-east-1"
+    ECR_REPO: "650251688006.dkr.ecr.us-east-1.amazonaws.com/braintasks"
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION \
+          | docker login --username AWS --password-stdin $ECR_REPO
+  build:
+    commands:
+      - echo Building Docker image...
+      - docker build -t braintasks:latest .
+      - docker tag braintasks:latest $ECR_REPO:latest
+  post_build:
+    commands:
+      - echo Pushing Docker image to ECR...
+      - docker push $ECR_REPO:latest
+artifacts:
+  files:
+    - '**/*'

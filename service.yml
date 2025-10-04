@@ -1,12 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: myapp-service
+  name: my-app-service
+  labels:
+    app: my-app
 spec:
+  type: LoadBalancer   # creates an external ELB to access the app
   selector:
-    app: myapp
+    app: my-app        # must match labels in your deployment.yaml
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 3000
-  type: LoadBalancer
+      port: 80         # external port
+      targetPort: 3000 # container port

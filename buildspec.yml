@@ -3,11 +3,13 @@ version: 0.2
 phases:
   install:
     commands:
-      - echo "Installing dependencies..."
-      - docker --version
+      - echo "Hello from install phase"
 
   build:
     commands:
-      - echo "Building Docker image..."
-      - docker build -t myapp:latest .
+      - echo "Hello from build phase"
+
+artifacts:
+  files:
+    - deploy/**
 

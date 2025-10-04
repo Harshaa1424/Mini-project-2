@@ -1,40 +1,21 @@
 version: 0.2
 
-env:
-  variables:
-    AWS_DEFAULT_REGION: "us-east-1"        # set as appropriate
-    IMAGE_REPO_NAME: "my-app-repo"         # set your ECR repo name
 phases:
   install:
-    runtime-versions:
-      docker: 19
     commands:
       - echo "Installing dependencies..."
-      - apk add --no-cache jq || true     # optional, some images use apk; adapt for Ubuntu
   pre_build:
     commands:
-      - echo "Logging in to Amazon ECR..."
-      - aws --version
-      - ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-      - ECR_URI="$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME"
-      - echo "ECR URI is $ECR_URI"
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      - IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION:=latest}
+      - echo "Preparing build..."
   build:
     commands:
-      - echo "Building the Docker image..."
-      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
-      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $ECR_URI:$IMAGE_TAG
+      - echo "Building Docker image..."
+      - docker build -t myapp:$CODEBUILD_RESOLVED_SOURCE_VERSION .
   post_build:
     commands:
-      - echo "Pushing the image to ECR..."
-      - docker push $ECR_URI:$IMAGE_TAG
-      - echo "Generating Kubernetes manifest with image..."
-      - mkdir -p deploy
-      - sed "s|IMAGE_PLACEHOLDER|$ECR_URI:$IMAGE_TAG|g" k8s/deployment.yaml > deploy/deployment.yaml
-      - echo "Artifact manifest created: deploy/deployment.yaml"
+      - echo "Build completed successfully"
+
 artifacts:
   files:
     - deploy/deployment.yaml
-
 

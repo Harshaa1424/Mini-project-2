@@ -4,12 +4,17 @@ phases:
   install:
     commands:
       - echo "Hello from install phase"
-
+  pre_build:
+    commands:
+      - echo "Hello from pre-build phase"
   build:
     commands:
       - echo "Hello from build phase"
+      # Uncomment below if you want to build Docker image later
+      # - docker build -t myapp:latest .
 
 artifacts:
   files:
-    - deploy/**
+    - '**/*'   
+
 
